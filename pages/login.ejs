@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <script src = "https://crowdin-web-components.s3.amazonaws.com/crowdin-web-components.js"></script>
+</head>
+<body>
+    <% if (errorMessage) { %>
+        <crowdin-alert type="error" title="<%= errorTitle %>"><%= errorMessage %></crowdin-alert>
+    <% } %>
+    <form method="POST" action="/login">
+        <crowdin-input
+            with-fixed-height
+            label="Enter Project ID"
+            value=""
+            name="projectID"
+            onchange="onInputChange(this)"
+            help-text-html="Help text with <b>html</b>"
+        ></crowdin-input>
+        <crowdin-input
+            with-fixed-height
+            label="Enter Personal Access Token"
+            value=""
+            name="accessToken"
+            onchange="onInputChange(this)"
+            help-text-html="Help text with <b>html</b>"
+        ></crowdin-input>
+        <crowdin-button primary >Submit</crowdin-button>
+    </form>
+</body>
+</html>

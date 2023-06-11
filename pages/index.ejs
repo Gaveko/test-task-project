@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src = "https://crowdin-web-components.s3.amazonaws.com/crowdin-web-components.js"></script>
+</head>
+<body>
+    <crowdin-files-component custom-content-is-clickable="true" search-placeholder="Search something" root-name="Project name"></crowdin-files-component>
+    <script type="text/javascript">
+        var filesData = `<%- JSON.stringify(tree) %>`;
+        var parsedData = [];
+        try {
+          parsedData = JSON.parse(filesData);
+        } catch(e) {
+          console.log("cant parse json", e);
+        }
+        var crowdinFiles = document.querySelector("crowdin-files-component");
+        crowdinFiles && crowdinFiles.setAttribute("is-loading", true);
+        setTimeout(() => {
+          crowdinFiles && crowdinFiles.setFilesData(parsedData.data);
+          crowdinFiles && crowdinFiles.removeAttribute("is-loading");
+        }, 1000);
+      </script>
+      <crowdin-select
+         is-searchable
+         close-on-select="false"
+         name="Languages"
+         id="lang-select"
+         label="Select required language"
+      >
+         <option value="" selected>--Please choose an option--</option>
+         <% targetLanguageIds.forEach((id) => { %>
+            <option value="<%= id %>"><%= id %></option>
+         <% }) %>
+      </crowdin-select>
+      <crowdin-button primary onclick="downloadButtonClick()">Download</crowdin-button>
+      <script type="text/javascript">
+         async function downloadButtonClick(){
+            let selectedItems = await getFilesSelected();
+            let selectedFiles = selectedItems.filter(value => value.type != undefined);
+
+            var select = document.querySelector("#lang-select")
+            var selectValue = (await select.getValue())[0];
+            console.log("select value: ", selectValue);
+
+            if (selectedFiles.length > 0) {
+               let selectedFilesIds = selectedFiles.map(item => { return item.id });
+
+               fetch('/download', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                     selectedLang: selectValue,
+                     selectedFilesIds: selectedFilesIds
+                  }),
+                  headers: {
+                     'Content-Type': 'application/json;charset=utf-8'
+                  }
+               })
+                  .then(res => res.blob())
+                  .then( blob => {
+                     var file = window.URL.createObjectURL(blob);
+                     window.location.assign(file);
+                  });
+            }
+         }
+       </script>
+      <script type="text/javascript">
+         async function getFilesSelected() {
+            var crowdinFiles = document.querySelector("crowdin-files-component");
+
+            return await crowdinFiles.getSelected();
+         }
+      </script>
+</body>
+</html>
