@@ -6,10 +6,13 @@ This is a simple integration with the Crowdin platform.
 
 Before installation the Docker Engine must be installed.
 
+Ubuntu 22.04
 ```bash
+cd {projectFolder}
+
 git clone https://github.com/Gaveko/test-task-project.git
 
-cd ./{projectFolder}
+cd ./crowdin-test
 
-docker compose up
+sudo docker compose up
 ```
